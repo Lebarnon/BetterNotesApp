@@ -1,15 +1,14 @@
 <template>
-   <q-scroll-area class="fit">
-    <q-list padding class="menu-list">
-      
-      <FileNavFolderListItem 
-        v-for="collection in collections"
-        :icon="collection.icon"
-        :name="collection.name"
-      />
+  <q-list padding class="menu-list q-pr-md">
+    
+    <FileNavFolderListItem 
+      v-for="collection in collections"
+      :icon="collection.icon"
+      :name="collection.name"
+      class="q-mb-sm"
+    />
 
-    </q-list>
-  </q-scroll-area>
+  </q-list>
 </template>
 
 <script setup lang="ts">
@@ -19,7 +18,172 @@ const collections = ref<Array<Collection>>([
     id: "hi",
     name: "test",
     icon: "folder"
-  }
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
+  {
+    id: "hi",
+    name: "test",
+    icon: "folder"
+  },
 ])
 </script>
 

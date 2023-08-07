@@ -4,14 +4,25 @@
         show-if-above
         :width="200"
         :breakpoint="500"
+        class="bg-primary"
       >
-        <FileNavFolderList />
+        <q-btn
+          icon="add"
+          label="New"
+          no-caps
+          class="q-ml-md q-my-md q-pa-md"
+          style="border-radius: 10px;"
+        />
+        <q-scroll-area style="height: 80vh;">
+          <FileNavFolderList />
+        </q-scroll-area>
     </q-drawer>
 </template>
 
 <script setup>
+import { useUserStore } from '~/store/user';
 import { ref } from 'vue'
 
-const drawer = ref(true)
+const drawer = computed(() => useUserStore().isAuthenticated)
 </script>
 

@@ -1,92 +1,98 @@
 import { defineStore } from 'pinia'
-import { User } from '@/types/types'
-import { UserCredential, UserInfo, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+import { AppUser } from '@/types/types'
+import { UserCredential, User, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import userfactory from '@/utils/factory/userfactory'
+
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: null as null | User,
+    user: null as null | AppUser,
     isLoading: false as Boolean,
   }),
+  getters: {
+    isAuthenticated: (state) => !!state.user
+  },
   actions: {
-    async initAuth() {
-      return 
+    async initAuth() { 
+      const { $auth } = useNuxtApp()
+
+      return new Promise(resolve => {
+        // this adds a hook for the initial auth-change event
+        onAuthStateChanged($auth, (user) => {
+          useUserStore().setUser(user).then(() => {
+            console.log("user initialised")
+            resolve(user)
+          })
+        })
+      })
     },
-    async setUser(user: UserInfo) {         
+    // used by onauthstatechange to change the user state
+    async setUser(user: User | null) {     
+      const { $firestore } = useNuxtApp()
       if (user) {
         console.log('User Store: user signed in...')
         // get user info from firestore
-        const docRef = doc(db, "users", user.uid);
+        const docRef = doc($firestore, "users", user.uid);
         const snapshot = await getDoc(docRef);
         
         if (snapshot.exists()) {
-          this.user = {id: snapshot.id, ...snapshot.data()}
+          this.user =  userfactory.fromFirestore(snapshot.data())
         } else {
-          console.log("This user should not exist", id);
-          this.user = {...user}
+          const newAppUser = userfactory.fromFirebaseUser(user)
+          await setDoc(doc($firestore, "users", user.uid), newAppUser.userSerializer())
         }
+        useRouter().replace('/')
       } else {
         console.log('User Store: user not logged in or created yet')
         this.user = null
       }
     },
-    async signInWithEmail (email, password) {
-      signInWithEmailAndPassword(auth, email, password).then(() => {
-        useSnackbarStore().display("Successfully Signed in!", "green-darken-2")
-        router.push("/")
+    // sign in user with email
+    async signInWithEmail (email: string, password: string) {
+      const { $auth, $firestore } = useNuxtApp()
+
+      signInWithEmailAndPassword($auth, email, password).then(() => {
+        Notify.create({ message: "Successfully Signed in!", color: 'positive' })
+        useRouter().push("/")
       })
       .catch((error) => {
-        useSnackbarStore().display("Login Failed: " + error.code, "red-darken-2")
-        return error.code
+        console.log(error)
+        Notify.create({ message: "Login Failed: " + error.code, color: 'negative' })
       })
-      return true
     },
-    async signUp(userInfo){
-      const {email, password, ...otherInfo} = userInfo
-      otherInfo.ownListingIds = []
-      otherInfo.favListingIds = []
-      createUserWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
-          await setDoc(doc(db, "users", userCredential.user.uid), {email, ...otherInfo})
-      }).catch((err) => {
-        useSnackbarStore().display(err.code, "red-darken-2")
-        return err.code
+    async signUpWithEmail(email: string, password: string){
+      const { $auth, $firestore } = useNuxtApp()
+      createUserWithEmailAndPassword($auth, email, password).then(async (userCredential) => {
+      }).catch((error) => {
+        console.error(error)
+        Notify.create({ message: "Sign Up Failed: " + error.code, color: 'negative' })
+        return
       })
-      router.push("/")
-      return true
-
+      useRouter().push("/")
     },
     async signOut() {
+      const { $auth, $firestore } = useNuxtApp()
       try {
-        await auth.signOut()
-        router.push("/")
-      } catch (err) {
-        console.error(err)
+        await $auth.signOut()
+        useRouter().push("/auth/login")
+      } catch (error) {
+        console.error("Sign out failed")
+        Notify.create({ message: "Sign Out Failed: " + error, color: 'negative' })
       }
     },
-    async resetPassword(email){
-      if(email.trim() == ""){
-        useSnackbarStore().display("Please enter an email!", "red-darken-2")
-        return
-      }
-      sendPasswordResetEmail(auth, email)
-      .then(() => {
-        useSnackbarStore().display("Password reset email sent!", "green-darken-2")
-      })
-      .catch((error) => {
-        useSnackbarStore().display(error.code, "red-darken-2")
-      });
-    },
-    async signUpWithEmailAndPassword(email: string, password: string){
-      const {$auth} = useNuxtApp()
-      createUserWithEmailAndPassword($auth, email, password)
-      .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-      });
-    }
+    // async resetPassword(email: string){
+    //   const { $auth, $firestore } = useNuxtApp()
+    //   if(email.trim() == ""){
+    //     useSnackbarStore().display("Please enter an email!", "red-darken-2")
+    //     return
+    //   }
+    //   sendPasswordResetEmail($auth, email)
+    //   .then(() => {
+    //     useSnackbarStore().display("Password reset email sent!", "green-darken-2")
+    //   })
+    //   .catch((error) => {
+    //     useSnackbarStore().display(error.code, "red-darken-2")
+    //   });
+    // },
   }
 })

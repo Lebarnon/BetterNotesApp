@@ -2,14 +2,14 @@
     <q-card class="q-pa-md shadow-2 my-box-shadow" style="max-width: 400px; width:100%"  bordered>
         <q-card-section class="text-center">
             <div class="text-grey-9 text-h5 text-weight-bold">Sign up</div>
-            <div class="text-grey-8">Sign in below to access your account</div>
+            <div class="text-grey-8">Provide your details below to access your account</div>
         </q-card-section>
         <q-card-section>
             <q-input dense outlined v-model="email" label="Email Address"></q-input>
             <q-input dense outlined class="q-mt-md" v-model="password" type="password" label="Password"></q-input>
         </q-card-section>
         <q-card-section>
-            <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign up" no-caps class="full-width"></q-btn>
+            <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign up" no-caps class="full-width" @click="signUpWithEmail"></q-btn>
         </q-card-section>
         <q-card-section class="text-center q-pt-none">
             <div class="text-grey-8">Already have an account?
@@ -22,8 +22,19 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '~/store/user';
+
 const email = ref<string>("")
 const password = ref<string>("")
+
+const userStore = useUserStore()
+
+function signUpWithEmail(){
+    if (email.value && password.value){
+        // TODO: add checks
+        userStore.signUpWithEmail(email.value, password.value)        
+    }
+}
 </script>
 
 <style scoped>

@@ -1,4 +1,5 @@
 import Collection from "./Collection";
-import User from "./User";
+import AppUser from "./AppUser";
+import AppDocument from "./AppDocument";
 
-export { Collection, User }
+export { Collection, AppUser, AppDocument }

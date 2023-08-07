@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from "firebase/auth"
 import { getFirestore } from 'firebase/firestore' 
 import { getAnalytics } from "firebase/analytics"
+import { getStorage } from "firebase/storage";
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
@@ -19,6 +20,7 @@ export default defineNuxtPlugin(() => {
     const analytics = getAnalytics(app) 
     const auth = getAuth(app)
     const firestore = getFirestore(app)
+    const storage = getStorage(app)
 
     // nuxtApp.vueApp.provide('auth', auth)
     // nuxtApp.provide('auth', auth)
@@ -28,7 +30,8 @@ export default defineNuxtPlugin(() => {
     return {
         provide:{
             auth,
-            firestore
+            firestore,
+            storage
         }
     }
 })

@@ -9,7 +9,7 @@
             <q-input dense outlined class="q-mt-md" v-model="password" type="password" label="Password"></q-input>
         </q-card-section>
         <q-card-section>
-            <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign in" no-caps class="full-width"></q-btn>
+            <q-btn style="border-radius: 8px;" color="dark" rounded size="md" label="Sign in" no-caps class="full-width" @click="signInWithEmail()"></q-btn>
         </q-card-section>
         <q-card-section class="text-center q-pt-none">
             <div class="text-grey-8">Don't have an account yet?
@@ -22,8 +22,18 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '~/store/user';
+
 const email = ref<string>("")
 const password = ref<string>("")
+const userStore = useUserStore()
+
+function signInWithEmail(){
+    if (email.value && password.value){
+        // TODO: add checks
+        userStore.signInWithEmail(email.value, password.value)        
+    }
+}
 </script>
 
 <style scoped>

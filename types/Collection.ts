@@ -1,5 +1,9 @@
+import AppDocument from "./AppDocument";
+
 export default interface Collection {
-    id: string,
+    id: string|null,
     name: string,
-    icon: string
+    icon: string,
+    dateCreated: any,
+    documents: Array<AppDocument>,
 }
