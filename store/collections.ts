@@ -6,6 +6,7 @@ import { useUserStore } from './user'
 export const useCollectionsStore = defineStore('collections', {
   state: () => ({
     collections: [] as Array<AppCollection>,
+    currentCollection: 0 as number,
   }),
   getters: {
     getUser(state) {
@@ -14,6 +15,15 @@ export const useCollectionsStore = defineStore('collections', {
         throw new Error("Please login to continue.")
       }
       return user
+    },
+    getCurrentCollection(state){
+      if(state.collections.length==0){
+        return null
+      }
+      if(state.collections.length <= state.currentCollection){
+        state.currentCollection = 0
+      }
+      return state.collections[state.currentCollection]
     }
   },
   actions: {

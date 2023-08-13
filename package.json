@@ -21,6 +21,7 @@
     "@quasar/extras": "^1.16.5",
     "firebase": "^10.1.0",
     "pinia": "^2.1.6",
-    "quasar": "^2.12.3"
+    "quasar": "^2.12.3",
+    "vue3-dropzone": "^2.1.0"
   }
 }
