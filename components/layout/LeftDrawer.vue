@@ -12,6 +12,7 @@
           no-caps
           class="q-ml-md q-my-md q-pa-md"
           style="border-radius: 10px;"
+          @click="handleAddCollection()"
         />
         <q-scroll-area style="height: 80vh;">
           <FileNavFolderList />
@@ -22,7 +23,13 @@
 <script setup>
 import { useUserStore } from '~/store/user';
 import { ref } from 'vue'
+import { useCollectionsStore } from '~/store/collections';
 
+const collectionStore = useCollectionsStore()
 const drawer = computed(() => useUserStore().isAuthenticated)
+
+function handleAddCollection(){
+  collectionStore.createCollection("newName")
+}
 </script>
 

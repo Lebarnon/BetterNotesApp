@@ -10,7 +10,8 @@ export const useUserStore = defineStore('user', {
     isLoading: false as Boolean,
   }),
   getters: {
-    isAuthenticated: (state) => !!state.user
+    isAuthenticated: (state) => !!state.user,
+    getUser: (state) => state.user
   },
   actions: {
     async initAuth() { 

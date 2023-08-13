@@ -25,4 +25,12 @@
         </div>
     </q-page>
 </template>
+
+<script setup>
+import { useCollectionsStore } from '@/store/collections';
+
+onMounted(() => {
+    useCollectionsStore().setCollections()
+})
+</script>
   

@@ -1,31 +1,50 @@
 import { defineStore } from 'pinia'
-import { AppUser, Collection } from '@/types/types'
-import { addDoc, arrayUnion, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { AppUser, AppCollection } from '@/types/types'
+import { addDoc, arrayUnion, collection, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
+import collectionfactory from '@/utils/factory/collectionfactory'
+import { useUserStore } from './user'
 export const useCollectionsStore = defineStore('collections', {
   state: () => ({
-    collections: null as null | Collection,
+    collections: [] as Array<AppCollection>,
   }),
+  getters: {
+    getUser(state) {
+      const user = useUserStore().getUser
+      if(!user){
+        throw new Error("Please login to continue.")
+      }
+      return user
+    }
+  },
   actions: {
-    setCollections(user: AppUser){
+    // subscribe to collections
+    async setCollections(){
+      const user = this.getUser
+      const { $firestore } = useNuxtApp()
+      // Query a reference to a subcollection
+      const querySnapshot = await getDocs(collection($firestore, "users", user.uid, "collections"))
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        this.collections.push(collectionfactory.fromFirestore(doc.data()))
+      });
     },
-    async createCollection(user: AppUser, name: string) {
+    async createCollection(name: string) {
       try {
+        const user = this.getUser
         const { $firestore } = useNuxtApp()
-        const userRef = doc($firestore, "users", user.uid)
         
-        const newCollection = {
-          name: name,
-          dateCreated: serverTimestamp(),
-          documents: []
-        }
+        const newCollection:AppCollection = collectionfactory.defaulCollection(name)
         // You can define the object properties here. For example:
-        const docRef = await addDoc(collection($firestore, "documents"), newCollection)
-
+        const docRef = await addDoc(collection($firestore, "users", user.uid, "collections"), newCollection)
+        await updateDoc(docRef, {
+          id: docRef.id
+        });
+        Notify.create({message: "Created collection: " + name, color:'positive'})
+        newCollection.id = docRef.id
+        this.collections.push(newCollection)
 
         // Update the "collections" field in the "users" > user.uid collection with new doc id
-        await updateDoc(userRef, {
-          collections: arrayUnion(docRef.id)
-        })
+        
       } catch (error) {
         console.error('Error creating collection:', error);
         Notify.create({message: "Error creating collection: " + error, color:'negative'})

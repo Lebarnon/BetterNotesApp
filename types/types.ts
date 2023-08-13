@@ -1,5 +1,5 @@
-import Collection from "./Collection";
+import AppCollection from "./AppCollection";
 import AppUser from "./AppUser";
 import AppDocument from "./AppDocument";
 
-export { Collection, AppUser, AppDocument }
+export { AppCollection, AppUser, AppDocument }
