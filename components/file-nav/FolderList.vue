@@ -6,6 +6,8 @@
       :icon="collection.icon"
       :name="collection.name"
       class="q-mb-sm"
+      :selected="collection.id == collectionStore.getSelectedCollection?.id"
+      @handle-click="() => collectionStore.changeSelectedCollection(collection)"
     />
 
   </q-list>
@@ -14,6 +16,8 @@
 <script setup lang="ts">
 import { useCollectionsStore } from '@/store/collections';
 const collectionStore = useCollectionsStore()
+
+
 </script>
 
 <style scoped>

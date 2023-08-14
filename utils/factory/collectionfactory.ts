@@ -13,7 +13,6 @@ const defaulCollection = function (name: string){
         id: "filler",
         name: name,
         dateCreated: serverTimestamp(),
-        documents: [],
         icon: "assignment"
     }
     return newCollection

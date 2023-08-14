@@ -31,17 +31,19 @@
 
 <script setup>
 import { useCollectionsStore } from '@/store/collections';
+import { useDocumentsStore } from '@/store/documents';
 import { useDropzone } from "vue3-dropzone";
 onMounted(() => {
     useCollectionsStore().setCollections()
 })
 
 function onDrop(acceptFiles, rejectReasons){
-    console.log(acceptFiles)
-    console.log(rejectReasons)
+    for(const file of acceptFiles){
+        useDocumentsStore().uploadDocument(file)
+    }
 }
 
-const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDrop })
+const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDrop, noClick:true })
 
 
 function onAddFiles() {

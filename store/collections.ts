@@ -3,10 +3,11 @@ import { AppUser, AppCollection } from '@/types/types'
 import { addDoc, arrayUnion, collection, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
 import collectionfactory from '@/utils/factory/collectionfactory'
 import { useUserStore } from './user'
+import { useDocumentsStore } from './documents'
 export const useCollectionsStore = defineStore('collections', {
   state: () => ({
     collections: [] as Array<AppCollection>,
-    currentCollection: 0 as number,
+    selectedCollection: null as AppCollection | null,
   }),
   getters: {
     getUser(state) {
@@ -16,14 +17,8 @@ export const useCollectionsStore = defineStore('collections', {
       }
       return user
     },
-    getCurrentCollection(state){
-      if(state.collections.length==0){
-        return null
-      }
-      if(state.collections.length <= state.currentCollection){
-        state.currentCollection = 0
-      }
-      return state.collections[state.currentCollection]
+    getSelectedCollection(state){
+      return state.selectedCollection
     }
   },
   actions: {
@@ -60,5 +55,9 @@ export const useCollectionsStore = defineStore('collections', {
         Notify.create({message: "Error creating collection: " + error, color:'negative'})
       }
     },
+    changeSelectedCollection(newCollection: AppCollection){
+      this.selectedCollection = newCollection
+      useDocumentsStore().fetchDocuments()
+    }
   }
 })
