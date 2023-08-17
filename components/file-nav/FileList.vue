@@ -2,10 +2,10 @@
   <q-list padding>
     
     <FileNavFileListItem 
-      v-for="file in useDocumentsStore().getDocuments"
-      :icon="file.icon"
-      :name="file.name"
-      class=""
+      v-for="file in documentStore.getDocuments"
+      :app-document="file"
+      :is-selected="documentStore.isDocumentSelect(file)"
+      @on-app-document-clicked="documentStore.setSelectedDocument(file)"
     />
 
   </q-list>
@@ -14,6 +14,8 @@
 <script setup lang="ts">
 import { AppDocument } from '@/types/types'
 import { useDocumentsStore } from '@/store/documents';
+
+const documentStore = useDocumentsStore()
 </script>
 
 <style scoped>
