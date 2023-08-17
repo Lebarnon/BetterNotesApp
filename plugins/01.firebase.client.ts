@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app' 
-import { getAuth } from "firebase/auth"
-import { getFirestore } from 'firebase/firestore' 
+import { connectAuthEmulator, getAuth } from "firebase/auth"
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore' 
 import { getAnalytics } from "firebase/analytics"
-import { getStorage } from "firebase/storage";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
@@ -21,7 +21,11 @@ export default defineNuxtPlugin(() => {
     const auth = getAuth(app)
     const firestore = getFirestore(app)
     const storage = getStorage(app)
-
+    
+    connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+    connectStorageEmulator(storage, '127.0.0.1', 9199);
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099')
+    // connect to emulator
     // nuxtApp.vueApp.provide('auth', auth)
     // nuxtApp.provide('auth', auth)
 
