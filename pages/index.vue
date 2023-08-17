@@ -23,7 +23,12 @@
                         </q-scroll-area>
                     </div>
                     <q-separator  vertical/>
-                    test
+                    <div class="col-7">
+                        <q-scroll-area  style="height: 100%;" v-if="docStore.getSelectedDocument">
+                            <q-btn @click="docStore.deleteDoc(docStore.getSelectedDocument)">Delete</q-btn>
+                            {{ docStore.getSelectedDocument }}
+                        </q-scroll-area>
+                    </div>
                 </div>
             </div>
     </q-page>
@@ -33,21 +38,17 @@
 import { useCollectionsStore } from '@/store/collections';
 import { useDocumentsStore } from '@/store/documents';
 import { useDropzone } from "vue3-dropzone";
-onMounted(() => {
-    useCollectionsStore().setCollections()
+const docStore = useDocumentsStore()
+onBeforeMount(async () => {
+    await useCollectionsStore().setCollections()
 })
 
 function onDrop(acceptFiles, rejectReasons){
     for(const file of acceptFiles){
-        useDocumentsStore().uploadDocument(file)
+        docStore.uploadDocument(file)
     }
 }
 
 const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDrop, noClick:true })
-
-
-function onAddFiles() {
-    console.log("on add files called")
-}
 </script>
   
