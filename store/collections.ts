@@ -8,6 +8,7 @@ export const useCollectionsStore = defineStore('collections', {
   state: () => ({
     collections: [] as Array<AppCollection>,
     selectedCollection: null as AppCollection | null,
+    unsubscribes: [] as any,
   }),
   getters: {
     getUser(state) {
@@ -56,8 +57,10 @@ export const useCollectionsStore = defineStore('collections', {
       }
     },
     changeSelectedCollection(newCollection: AppCollection){
+      // Dont have to change collection if already selected
+      if(this.selectedCollection?.id == newCollection.id) return
       this.selectedCollection = newCollection
-      useDocumentsStore().fetchDocuments()
+      useDocumentsStore().setDocuments()
     }
   }
 })
