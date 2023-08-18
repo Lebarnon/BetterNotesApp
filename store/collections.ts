@@ -4,11 +4,15 @@ import { addDoc, arrayUnion, collection, getDocs, serverTimestamp, updateDoc } f
 import collectionfactory from '@/utils/factory/collectionfactory'
 import { useUserStore } from './user'
 import { useDocumentsStore } from './documents'
+
+const queryEndpoint = "http://127.0.0.1:5001/better-notes-b6af7/asia-southeast2/query"
+
 export const useCollectionsStore = defineStore('collections', {
   state: () => ({
     collections: [] as Array<AppCollection>,
     selectedCollection: null as AppCollection | null,
     unsubscribes: [] as any,
+    conversation: []
   }),
   getters: {
     getUser(state) {
@@ -61,6 +65,27 @@ export const useCollectionsStore = defineStore('collections', {
       if(this.selectedCollection?.id == newCollection.id) return
       this.selectedCollection = newCollection
       useDocumentsStore().setDocuments()
+    },
+    async sendQuery(query: string){
+      // get from database
+      const reqBody = JSON.stringify({
+        "question": query,
+        "collectionId": this.selectedCollection?.id
+      })
+      try{
+        const response = await fetch(
+          queryEndpoint,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          })
+        const data = await response.json()
+        console.log("Fetch complete:", data)
+
+      }catch(error){
+        console.error("Error fetching: ", error)
+      }
     }
   }
 })

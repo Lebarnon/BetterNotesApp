@@ -161,7 +161,7 @@ export const useDocumentsStore = defineStore('documents', {
         Notify.create({message: "Failed to delete file:"+error, color:"negative"})
       }
     },
-    setSelectedDocument(appDocument: AppDocument){
+    setSelectedDocument(appDocument: AppDocument | null){
       this.selectedDocument = appDocument
     },
     addDocumentToState(collectionId: string, appDocumentId: string, appDocument: AppDocument){

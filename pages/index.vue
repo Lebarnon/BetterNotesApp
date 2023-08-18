@@ -24,10 +24,23 @@
                     </div>
                     <q-separator  vertical/>
                     <div class="col-7">
-                        <q-scroll-area  style="height: 100%;" v-if="docStore.getSelectedDocument">
-                            <q-btn @click="docStore.deleteDoc(docStore.getSelectedDocument)">Delete</q-btn>
-                            {{ docStore.getSelectedDocument }}
-                        </q-scroll-area>
+                            <div v-if="docStore.getSelectedDocument">
+                                <q-btn @click="docStore.deleteDoc(docStore.getSelectedDocument)">Delete</q-btn>
+                                {{ docStore.getSelectedDocument }}
+                            </div>
+                            <div v-else class="chat-container">
+                                
+                            </div>
+                            <div class="input-bar bg-primary">
+                                <q-form
+                                    @submit="handleFormSubmit()"
+                                >
+                                    <q-input
+                                        v-model="queryInput"
+                                        placeholder="Type a message..."
+                                    />
+                                </q-form>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -39,6 +52,8 @@ import { useCollectionsStore } from '@/store/collections';
 import { useDocumentsStore } from '@/store/documents';
 import { useDropzone } from "vue3-dropzone";
 const docStore = useDocumentsStore()
+const queryInput = ref()
+
 onBeforeMount(async () => {
     await useCollectionsStore().setCollections()
 })
@@ -49,6 +64,38 @@ function onDrop(acceptFiles, rejectReasons){
     }
 }
 
+function handleFormSubmit(){
+    if(queryInput.value.trim){
+        useCollectionsStore().sendQuery(queryInput.value)
+    }
+}
+
 const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDrop, noClick:true })
 </script>
   
+<style scoped>
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.message {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.input-bar {
+    position: fixed; 
+    bottom:0%;
+    width:100%;  
+}
+</style>
+
+
+
+
+
