@@ -1,17 +1,24 @@
 <template>
-    <q-page> 
+    <q-page style="position: relative;"> 
         <div class="bg-white q-ma-md child row" style="border-radius: 10px; overflow: hidden;" v-bind="getRootProps()">
             <input v-bind="getInputProps()"/>
-            <p v-if="isDragActive">Drop the files here ...</p>
-            <div class="col-3" style="border-right: 1px solid rgba(0, 0, 0, 0.12);">
+            <Transition name="fade">
+                <div v-if="isDragActive" class="dropzone" transition>
+                    <div class="text-center ">
+                        <q-icon name="upload" size="5rem" color="grey-9"></q-icon>
+                        <p class="text-h4">Drop files here to upload...</p>
+                    </div>
+                </div>
+            </Transition>
+            <div class="col-3" style="border-right: 1px solid rgba(0, 0, 0, 0.12); display: flex; flex-direction: column; max-height: 100%;">
                 <q-btn
                 icon="upload"
                 label="New"
                 no-caps
-                class="q-ml-md q-my-md"
+                class="q-mx-md q-my-md"
                 style="border-radius: 10px;"
                 />
-                <FileNavFileList/>
+                <FileNavFileList style="width: 100%; height: auto; overflow-y: auto;"/>
             </div>
             <div class="col-9" :style="{'display': 'flex', 'flex-direction': 'column', 'max-height': '100%', 'justify-content': docStore.getSelectedDocument ? 'space-between' : 'flex-end'}">
                 <div style="width: 100%; height: auto; overflow-y: auto;">
@@ -73,10 +80,28 @@ const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDr
   border: none !important;
   color: rgba(245, 66, 66, 0.3) !important;
 }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
   
 <style scoped>
-
+.dropzone {
+    position: absolute; 
+    width: 100%; 
+    height: 100%; 
+    z-index: 2; 
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+    display: flex; justify-content: center; align-items: center;
+}
 .child {
     position: absolute;
     top: 0;
@@ -85,24 +110,6 @@ const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDr
     background-color: #ccc;
 }
 
-.chat-messages {
-  flex: 0 0 100%;
-  overflow-y: auto;
-  padding: 10px;
-}
-
-.message {
-  background-color: #f0f0f0;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin: 5px 0;
-}
-
-.input-bar {
-    position: fixed; 
-    bottom:0%;
-    width:100%;  
-}
 </style>
 
 
