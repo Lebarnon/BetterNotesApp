@@ -77,6 +77,14 @@ function handleFormSubmit(){
 
 const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDrop, noClick:true })
 </script>
+
+<style>
+.firebase-emulator-warning {
+  background-color: transparent !important;
+  border: none !important;
+  color: rgba(245, 66, 66, 0.3) !important;
+}
+</style>
   
 <style scoped>
 
