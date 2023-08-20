@@ -1,15 +1,13 @@
 <template>
   <q-list padding class="menu-list q-pr-md">
-    
-    <FileNavFolderListItem 
-      v-for="collection in collectionStore.collections"
-      :icon="collection.icon"
-      :name="collection.name"
-      class="q-mb-sm"
-      :selected="collection.id == collectionStore.getSelectedCollection?.id"
-      @handle-click="() => collectionStore.changeSelectedCollection(collection)"
-    />
-
+      <FileNavFolderListItem 
+        v-for="collection in collectionStore.collections"
+        :icon="collection.icon"
+        :name="collection.name"
+        class="q-mb-sm"
+        :selected="collection.id == collectionStore.getSelectedCollection?.id"
+        @handle-click="() => collectionStore.changeSelectedCollection(collection)"
+      />
   </q-list>
 </template>
 
