@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { AppUser, AppCollection } from '@/types/types'
-import { addDoc, arrayUnion, collection, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { addDoc, arrayUnion, collection, getDocs, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
 import collectionfactory from '@/utils/factory/collectionfactory'
 import { useUserStore } from './user'
 import { useDocumentsStore } from './documents'
@@ -11,8 +11,8 @@ export const useCollectionsStore = defineStore('collections', {
   state: () => ({
     collections: [] as Array<AppCollection>,
     selectedCollection: null as AppCollection | null,
-    unsubscribes: [] as any,
-    conversation: []
+    unsubscribes: [] as any[],
+    conversation: [] as any[]
   }),
   getters: {
     getUser(state) {
@@ -37,6 +37,32 @@ export const useCollectionsStore = defineStore('collections', {
         // doc.data() is never undefined for query doc snapshots
         this.collections.push(collectionfactory.fromFirestore(doc.data()))
       });
+    },
+    async setConversation(){
+      const user = this.getUser
+      const { $firestore } = useNuxtApp()
+      const curCollection = this.selectedCollection
+      if(curCollection == null){
+        throw new Error("No Collection Selected")
+      }
+      this.conversation = []
+      const convesartionRef = collection($firestore, "users", user.uid, "collections", curCollection.id, "conversations")
+      const unsubscribe = onSnapshot(convesartionRef, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            this.conversation.push({id: change.doc.id ,question: change.doc.data().question, answer: change.doc.data().answer})
+          }
+          if (change.type === "modified") {
+            const modifiedIndex = this.conversation.findIndex(el => el.id == change.doc.id)
+            this.conversation.splice(modifiedIndex, 1, {id: change.doc.id ,question: change.doc.data().question, answer: change.doc.data().answer})
+          }
+          if (change.type === "removed") {
+            const modifiedIndex = this.conversation.findIndex(el => el.id == change.doc.id)
+            this.conversation.splice(modifiedIndex, 1)
+          }
+        });
+      });
+      return unsubscribe
     },
     async createCollection(name: string) {
       try {
@@ -64,27 +90,25 @@ export const useCollectionsStore = defineStore('collections', {
       // Dont have to change collection if already selected
       if(this.selectedCollection?.id == newCollection.id) return
       this.selectedCollection = newCollection
+      this.setConversation()
       useDocumentsStore().setDocuments()
     },
-    async sendQuery(query: string){
+    async askQuestion(question: string){
+      if(this.selectedCollection == null) throw new Error("No collection was selected")
       // get from database
-      const reqBody = JSON.stringify({
-        "question": query,
-        "collectionId": this.selectedCollection?.id
-      })
-      try{
-        const response = await fetch(
-          queryEndpoint,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: reqBody
-          })
-        const data = await response.json()
-        console.log("Fetch complete:", data)
-
-      }catch(error){
-        console.error("Error fetching: ", error)
+      try {
+        const user = this.getUser
+        const { $firestore } = useNuxtApp()
+        // You can define the object properties here. For example:
+        const docRef = await addDoc(collection($firestore, "users", user.uid, "collections", this.selectedCollection.id, "conversations"), {
+          question: question
+        })
+        // Notify.create({message: "Question Asked" + name, color:'positive'})
+        // Update the "collections" field in the "users" > user.uid collection with new doc id
+        
+      } catch (error) {
+        console.error('Error asking question:', error);
+        Notify.create({message: "Error asking question: " + error, color:'negative'})
       }
     }
   }
