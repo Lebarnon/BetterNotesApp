@@ -13,10 +13,11 @@
             <div class="col-3" style="border-right: 1px solid rgba(0, 0, 0, 0.12); display: flex; flex-direction: column; max-height: 100%;">
                 <q-btn
                 icon="upload"
-                label="New"
+                label="Add files"
                 no-caps
                 class="q-mx-md q-my-md"
                 style="border-radius: 10px;"
+                @click="open"
                 />
                 <FileNavFileList style="width: 100%; height: auto; overflow-y: auto;"/>
             </div>
@@ -31,15 +32,21 @@
                         <ChatConversationWindow :conversation="colStore.conversation"/>
                     </div>
                 </div>
-                <div v-if="!docStore.getSelectedDocument" class="bg-primary" style="width: 100%;">
+                <div v-if="!docStore.getSelectedDocument" style="width: 100%;">
                     <q-form
-                        @submit="handleFormSubmit()"
-                        class="q-ma-xs"
+                        @submit="handleFormSubmit"
+                        class="q-ma-sm"
                     >
                         <q-input
                             v-model="queryInput"
                             placeholder="Type a message..."
-                        />
+                            standout
+                            rounded
+                        >
+                        <template v-slot:after>
+                            <q-btn round dense flat icon="send" @click="handleFormSubmit"/>
+                        </template>
+                        </q-input>
                     </q-form>
                 </div>
             </div>
@@ -54,24 +61,34 @@ import { useDropzone } from "vue3-dropzone";
 const docStore = useDocumentsStore()
 const colStore = useCollectionsStore()
 const queryInput = ref()
+const $q = useQuasar()
 
 onBeforeMount(async () => {
     await colStore.setCollections()
 })
 
-function onDrop(acceptFiles, rejectReasons){
+async function onDrop(acceptFiles, rejectReasons){
+    const total = acceptFiles.length + rejectReasons.length
+    const accepted = acceptFiles.length
+    const typeAccepted = "PDF"
+    console.log(rejectReasons)
+    $q.notify({
+        message: `Uploading ${accepted}/${total} files. ${rejectReasons.length > 0 ? `Only ${typeAccepted} files are accepted` : ''}`
+    })
     for(const file of acceptFiles){
-        docStore.uploadDocument(file)
+       await docStore.uploadDocument(file)
     }
 }
 
 function handleFormSubmit(){
+    console.log("Fired")
     if(queryInput.value.trim){
         colStore.askQuestion(queryInput.value)
+        queryInput.value = ""
     }
 }
 
-const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDrop, noClick:true })
+const { getRootProps, getInputProps, isDragActive, open,...rest} = useDropzone({ onDrop, noClick:true, accept:['application/pdf']})
 </script>
 
 <style>
