@@ -1,13 +1,11 @@
 <template>
   <q-list padding>
-    
     <FileNavFileListItem 
       v-for="file in documentStore.getDocuments"
       :app-document="file"
       :is-selected="documentStore.isDocumentSelect(file)"
       @on-app-document-clicked="documentStore.setSelectedDocument(documentStore.isDocumentSelect(file) ? null : file)"
     />
-
   </q-list>
 </template>
 
