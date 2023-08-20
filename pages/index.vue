@@ -1,53 +1,42 @@
 <template>
-    <q-page class="row"> 
-            <div class="bg-white q-ma-md" style="border-radius: 10px; width: 100%; max-height: 100vh;" v-bind="getRootProps()">
-                <input v-bind="getInputProps()" />
-                <div class="row" style="height: 10%;">
-                    <div class="col-4">
-                        <q-btn
-                        icon="upload"
-                        label="New"
-                        no-caps
-                        class="q-ml-md q-my-md col"
-                        style="border-radius: 10px;"
-                        />
+    <q-page> 
+        <div class="bg-white q-ma-md child row" style="border-radius: 10px; overflow: hidden;" v-bind="getRootProps()">
+            <input v-bind="getInputProps()"/>
+            <p v-if="isDragActive">Drop the files here ...</p>
+            <div class="col-3" style="border-right: 1px solid rgba(0, 0, 0, 0.12);">
+                <q-btn
+                icon="upload"
+                label="New"
+                no-caps
+                class="q-ml-md q-my-md"
+                style="border-radius: 10px;"
+                />
+                <FileNavFileList/>
+            </div>
+            <div class="col-9" :style="{'display': 'flex', 'flex-direction': 'column', 'max-height': '100%', 'justify-content': docStore.getSelectedDocument ? 'space-between' : 'flex-end'}">
+                <div style="width: 100%; height: auto; overflow-y: auto;">
+                    <div v-if="docStore.getSelectedDocument">
+                        <FileDetails 
+                            :data="docStore.getSelectedDocument" 
+                            @handle-delete-click="docStore.deleteDoc(docStore.getSelectedDocument)"/>
                     </div>
-                    <p v-if="isDragActive">Drop the files here ...</p>
+                    <div v-else>
+                        <ChatConversationWindow :conversation="colStore.conversation"/>
+                    </div>
                 </div>
-                <q-separator />
-                <div class="row" style="max-height: 90%;">
-                    <div class="col-4 ">
-                        <q-scroll-area style="height: 100%;"  >
-                            <FileNavFileList/>
-                        </q-scroll-area>
-                    </div>
-                    <q-separator  vertical/>
-                    <div class="col-7">
-                        <q-scroll-area style="height: 70vh;">
-                            <div v-if="docStore.getSelectedDocument">
-                                <q-btn @click="docStore.deleteDoc(docStore.getSelectedDocument)">Delete</q-btn>
-                                {{ docStore.getSelectedDocument }}
-                            </div>
-                            <div v-else style="overflow-y: scroll; height: 100%;">
-                                <div v-for="convo in colStore.conversation"> 
-                                    <div>Question: {{ convo.question }}</div>
-                                    <div>Answer: {{ convo.answer }}</div>
-                                </div>
-                            </div>
-                        </q-scroll-area>
-                            <div class="bg-primary">
-                                <q-form
-                                    @submit="handleFormSubmit()"
-                                >
-                                    <q-input
-                                        v-model="queryInput"
-                                        placeholder="Type a message..."
-                                    />
-                                </q-form>
-                            </div>
-                    </div>
+                <div v-if="!docStore.getSelectedDocument" class="bg-primary" style="width: 100%;">
+                    <q-form
+                        @submit="handleFormSubmit()"
+                        class="q-ma-xs"
+                    >
+                        <q-input
+                            v-model="queryInput"
+                            placeholder="Type a message..."
+                        />
+                    </q-form>
                 </div>
             </div>
+        </div>
     </q-page>
 </template>
 
@@ -87,6 +76,14 @@ const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDr
 </style>
   
 <style scoped>
+
+.child {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 96%;
+    background-color: #ccc;
+}
 
 .chat-messages {
   flex: 0 0 100%;
