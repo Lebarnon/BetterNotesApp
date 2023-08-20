@@ -1,7 +1,6 @@
 <template>
     <q-page class="row"> 
-          
-            <div class="bg-white q-ma-md" style="border-radius: 10px; width: 100%; max-height: 100%;" v-bind="getRootProps()">
+            <div class="bg-white q-ma-md" style="border-radius: 10px; width: 100%; max-height: 100vh;" v-bind="getRootProps()">
                 <input v-bind="getInputProps()" />
                 <div class="row" style="height: 10%;">
                     <div class="col-4">
@@ -16,7 +15,7 @@
                     <p v-if="isDragActive">Drop the files here ...</p>
                 </div>
                 <q-separator />
-                <div class="row" style="height: 90%;">
+                <div class="row" style="max-height: 90%;">
                     <div class="col-4 ">
                         <q-scroll-area style="height: 100%;"  >
                             <FileNavFileList/>
@@ -24,14 +23,19 @@
                     </div>
                     <q-separator  vertical/>
                     <div class="col-7">
+                        <q-scroll-area style="height: 70vh;">
                             <div v-if="docStore.getSelectedDocument">
                                 <q-btn @click="docStore.deleteDoc(docStore.getSelectedDocument)">Delete</q-btn>
                                 {{ docStore.getSelectedDocument }}
                             </div>
-                            <div v-else class="chat-container">
-                                
+                            <div v-else style="overflow-y: scroll; height: 100%;">
+                                <div v-for="convo in colStore.conversation"> 
+                                    <div>Question: {{ convo.question }}</div>
+                                    <div>Answer: {{ convo.answer }}</div>
+                                </div>
                             </div>
-                            <div class="input-bar bg-primary">
+                        </q-scroll-area>
+                            <div class="bg-primary">
                                 <q-form
                                     @submit="handleFormSubmit()"
                                 >
@@ -52,10 +56,11 @@ import { useCollectionsStore } from '@/store/collections';
 import { useDocumentsStore } from '@/store/documents';
 import { useDropzone } from "vue3-dropzone";
 const docStore = useDocumentsStore()
+const colStore = useCollectionsStore()
 const queryInput = ref()
 
 onBeforeMount(async () => {
-    await useCollectionsStore().setCollections()
+    await colStore.setCollections()
 })
 
 function onDrop(acceptFiles, rejectReasons){
@@ -66,7 +71,7 @@ function onDrop(acceptFiles, rejectReasons){
 
 function handleFormSubmit(){
     if(queryInput.value.trim){
-        useCollectionsStore().sendQuery(queryInput.value)
+        colStore.askQuestion(queryInput.value)
     }
 }
 
@@ -76,7 +81,7 @@ const { getRootProps, getInputProps, isDragActive, ...rest} = useDropzone({ onDr
 <style scoped>
 
 .chat-messages {
-  flex: 1;
+  flex: 0 0 100%;
   overflow-y: auto;
   padding: 10px;
 }
