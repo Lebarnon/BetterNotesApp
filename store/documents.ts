@@ -141,7 +141,7 @@ export const useDocumentsStore = defineStore('documents', {
             );
         }catch(error){
             console.error("Failed to upload file: " + error)
-            Notify.create({message:"Failed to upload file", color:"negative"})
+            Notify.create({message:"Failed to upload file: " + error, color:"negative"})
         }
     },
     async deleteDoc(appDocument: AppDocument){

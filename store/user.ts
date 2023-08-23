@@ -39,8 +39,8 @@ export const useUserStore = defineStore('user', {
         if (snapshot.exists()) {
           this.user =  userfactory.fromFirestore(snapshot.data())
         } else {
-          const newAppUser = userfactory.fromFirebaseUser(user)
-          await setDoc(doc($firestore, "users", user.uid), newAppUser.userSerializer())
+          this.user = userfactory.fromFirebaseUser(user)
+          await setDoc(doc($firestore, "users", user.uid), this.user.userSerializer())
         }
         useRouter().replace('/')
       } else {
@@ -54,7 +54,6 @@ export const useUserStore = defineStore('user', {
 
       signInWithEmailAndPassword($auth, email, password).then(() => {
         Notify.create({ message: "Successfully Signed in!", color: 'positive' })
-        useRouter().push("/")
       })
       .catch((error) => {
         console.log(error)
@@ -64,6 +63,7 @@ export const useUserStore = defineStore('user', {
     async signUpWithEmail(email: string, password: string){
       const { $auth, $firestore } = useNuxtApp()
       createUserWithEmailAndPassword($auth, email, password).then(async (userCredential) => {
+        Notify.create({ message: "Welcome to Better Notes!", color: 'positive' })
       }).catch((error) => {
         console.error(error)
         Notify.create({ message: "Sign Up Failed: " + error.code, color: 'negative' })

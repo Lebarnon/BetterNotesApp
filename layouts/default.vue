@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr fff" class="shadow-2 rounded-borders bg-primary">
     <LayoutHeader @toggle-left-drawer="toggleLeftDrawer" />
 
-    <LayoutLeftDrawer />
+    <LayoutLeftDrawer v-if="useUserStore().isAuthenticated"/>
     <q-page-container>
       <slot />
     </q-page-container>

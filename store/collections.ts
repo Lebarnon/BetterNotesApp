@@ -12,7 +12,8 @@ export const useCollectionsStore = defineStore('collections', {
     collections: [] as Array<AppCollection>,
     selectedCollection: null as AppCollection | null,
     unsubscribes: [] as any[],
-    conversation: [] as any[]
+    conversation: [] as any[],
+    conversationSub: null as any,
   }),
   getters: {
     getUser(state) {
@@ -50,11 +51,11 @@ export const useCollectionsStore = defineStore('collections', {
       const unsubscribe = onSnapshot(convesartionRef, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
-            this.conversation.push({id: change.doc.id ,question: change.doc.data().question, answer: change.doc.data().answer})
+            this.conversation.push({id: change.doc.id ,...change.doc.data()})
           }
           if (change.type === "modified") {
             const modifiedIndex = this.conversation.findIndex(el => el.id == change.doc.id)
-            this.conversation.splice(modifiedIndex, 1, {id: change.doc.id ,question: change.doc.data().question, answer: change.doc.data().answer})
+            this.conversation.splice(modifiedIndex, 1, {id: change.doc.id ,...change.doc.data()})
           }
           if (change.type === "removed") {
             const modifiedIndex = this.conversation.findIndex(el => el.id == change.doc.id)
@@ -62,7 +63,7 @@ export const useCollectionsStore = defineStore('collections', {
           }
         });
       });
-      return unsubscribe
+      this.conversationSub = unsubscribe
     },
     async createCollection(name: string) {
       try {
@@ -78,9 +79,7 @@ export const useCollectionsStore = defineStore('collections', {
         Notify.create({message: "Created collection: " + name, color:'positive'})
         newCollection.id = docRef.id
         this.collections.push(newCollection)
-
-        // Update the "collections" field in the "users" > user.uid collection with new doc id
-        
+        this.changeSelectedCollection(newCollection)
       } catch (error) {
         console.error('Error creating collection:', error);
         Notify.create({message: "Error creating collection: " + error, color:'negative'})
@@ -90,19 +89,25 @@ export const useCollectionsStore = defineStore('collections', {
       // Dont have to change collection if already selected
       if(this.selectedCollection?.id == newCollection.id) return
       this.selectedCollection = newCollection
+      if(this.conversationSub != null) this.conversationSub()
       this.setConversation()
       useDocumentsStore().setDocuments()
     },
     async askQuestion(question: string){
-      if(this.selectedCollection == null) throw new Error("No collection was selected")
+      if(this.selectedCollection == null) {
+        Notify.create({message: "Please create or select a collection first..."})
+        return
+      }
       // get from database
       try {
         const user = this.getUser
         const { $firestore } = useNuxtApp()
         // You can define the object properties here. For example:
         const docRef = await addDoc(collection($firestore, "users", user.uid, "collections", this.selectedCollection.id, "conversations"), {
-          question: question
+          question: question,
+          dateCreated: serverTimestamp(),
         })
+        useDocumentsStore().selectedDocument = null
         // Notify.create({message: "Question Asked" + name, color:'positive'})
         // Update the "collections" field in the "users" > user.uid collection with new doc id
         

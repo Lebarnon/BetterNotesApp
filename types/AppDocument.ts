@@ -6,5 +6,6 @@ export default interface AppDocument {
     icon: string,
     dateCreated: any,
     downloadURL: string | null,
+    status: string
 }
 

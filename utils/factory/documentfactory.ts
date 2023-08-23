@@ -16,7 +16,8 @@ const defaultDocument = function (file: Blob | File){
         size: file.size,
         dateCreated: serverTimestamp(),
         icon: "assignment",
-        downloadURL: ""
+        downloadURL: "",
+        status: "loading"
     }
     return newDoc
 }

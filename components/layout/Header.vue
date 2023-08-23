@@ -3,6 +3,7 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-btn flat stretch
+          :to="'/'"
           >
           Better Notes
           </q-btn>
