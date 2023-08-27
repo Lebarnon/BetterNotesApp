@@ -84,7 +84,7 @@ const { getRootProps, getInputProps, isDragActive, open,...rest} = useDropzone({
 .firebase-emulator-warning {
   background-color: transparent !important;
   border: none !important;
-  color: rgba(245, 66, 66, 0.3) !important;
+  color: rgba(245, 66, 66, 0.0) !important;
 }
 .fade-enter-active,
 .fade-leave-active {
