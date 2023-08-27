@@ -18,6 +18,7 @@
 </div>
 
 #
+<img src='./assets/BetterNotes-showcase.png' alt="showcase"/>
 # About
 BetterNotes is a Software as a Service (SaaS) application designed to transform the way we interact with information. With BetterNotes, you can effortlessly input new information into a personalized AI chatbot, creating a digital companion that adapts to your needs. Moreover, the platform allows you to organize your information into separate collections, streamlining your data management process. Think of it as your digital library, where you can upload documents and “talk” to them.
 
