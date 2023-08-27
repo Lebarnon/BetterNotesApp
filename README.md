@@ -9,7 +9,7 @@
     <a href=https://www.youtube.com/watch?v=ALFtZPulHMM&ab_channel=LensonLim"><strong>View Demo »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">Server Repo</a>
+    <a href="https://github.com/Lebarnon/BetterNotesServer">Server Repo</a>
     ·
     <a href="https://github.com/Lebarnon/BetterNotesApp/issues">Report Bug</a>
     ·
